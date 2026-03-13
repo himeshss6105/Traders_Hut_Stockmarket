@@ -13,11 +13,22 @@ interface AuthModalProps {
   defaultTab?: "login" | "register";
 }
 
+const PROFESSIONS = [
+  "Student", "Software Engineer", "Doctor", "Teacher", "Business Owner",
+  "Government Employee", "Freelancer", "Trader", "Investor", "Other"
+];
+
+const INCOME_RANGES = [
+  "Below ₹2 LPA", "₹2-5 LPA", "₹5-10 LPA", "₹10-20 LPA", "₹20-50 LPA", "Above ₹50 LPA"
+];
+
 export default function AuthModal({ open, onClose, defaultTab = "login" }: AuthModalProps) {
   const { login, register } = useAuth();
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    name: "", email: "", password: "", profession: "", incomeRange: ""
+  });
 
   const handle = async () => {
     setLoading(true);
@@ -26,7 +37,7 @@ export default function AuthModal({ open, onClose, defaultTab = "login" }: AuthM
         await login(form.email, form.password);
         toast.success("Welcome back!");
       } else {
-        await register(form.name, form.email, form.password);
+        await register(form.name, form.email, form.password, form.profession, form.incomeRange);
         toast.success("Account created!");
       }
       onClose();
@@ -56,9 +67,8 @@ export default function AuthModal({ open, onClose, defaultTab = "login" }: AuthM
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${
-                tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               {t === "login" ? "Sign In" : "Register"}
             </button>
@@ -78,6 +88,7 @@ export default function AuthModal({ open, onClose, defaultTab = "login" }: AuthM
               />
             </div>
           )}
+
           <div className="space-y-1.5">
             <Label htmlFor="email" className="text-foreground">Email</Label>
             <Input
@@ -89,6 +100,7 @@ export default function AuthModal({ open, onClose, defaultTab = "login" }: AuthM
               className="bg-background border-border"
             />
           </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="password" className="text-foreground">Password</Label>
             <Input
@@ -101,6 +113,39 @@ export default function AuthModal({ open, onClose, defaultTab = "login" }: AuthM
               onKeyDown={(e) => e.key === "Enter" && handle()}
             />
           </div>
+
+          {tab === "register" && (
+            <>
+              <div className="space-y-1.5">
+                <Label className="text-foreground">Profession</Label>
+                <select
+                  value={form.profession}
+                  onChange={(e) => setForm({ ...form, profession: e.target.value })}
+                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="">Select your profession</option>
+                  {PROFESSIONS.map(p => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-foreground">Annual Income Range</Label>
+                <select
+                  value={form.incomeRange}
+                  onChange={(e) => setForm({ ...form, incomeRange: e.target.value })}
+                  className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="">Select income range</option>
+                  {INCOME_RANGES.map(i => (
+                    <option key={i} value={i}>{i}</option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
+
           <Button onClick={handle} disabled={loading} className="w-full font-display font-bold">
             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {tab === "login" ? "Sign In" : "Create Account"}

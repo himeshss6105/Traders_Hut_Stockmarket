@@ -24,7 +24,7 @@ const SiteHeader = () => {
             <span className="font-display text-xl font-bold text-foreground">Traders Hut</span>
           </div>
           <nav className="hidden items-center gap-6 md:flex">
-            {[["Markets", "/markets"], ["Charts", "/chart"], ["Watchlist", "/watchlist"], ["News", "/news"]].map(([label, path]) => (
+            {[["Markets", "/markets"], ["Charts", "/chart"], ["Watchlist", "/watchlist"], ["News", "/news"], ["Predict", "/prediction"]].map(([label, path]) => (
               <button key={label} onClick={() => navigate(path)} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                 {label}
               </button>

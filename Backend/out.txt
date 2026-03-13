@@ -1,0 +1,3 @@
+🚀 Traders Hut backend running on port 5000
+✅ MongoDB connected
+^C

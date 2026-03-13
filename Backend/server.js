@@ -100,6 +100,8 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
+  profession: { type: String, default: "" },
+  incomeRange: { type: String, default: "" },
   watchlist: { type: [String], default: ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS"] },
   createdAt: { type: Date, default: Date.now },
 });
@@ -107,6 +109,7 @@ UserSchema.pre("save", async function () {
   if (this.isModified("password")) this.password = await bcrypt.hash(this.password, 12);
 });
 const User = mongoose.model("User", UserSchema);
+
 
 const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -218,15 +221,16 @@ const INDIAN_STOCKS = [
 // ── Auth Routes ───────────────────────────────────────────────────────────────
 app.post("/api/auth/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, profession, incomeRange } = req.body;
     if (!name || !email || !password) return res.status(400).json({ error: "All fields required" });
-    if (password.length < 6) return res.status(400).json({ error: "Password min 6 chars" });
-    if (await User.findOne({ email })) return res.status(409).json({ error: "Email already registered" });
-    const user = await User.create({ name, email, password });
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) return res.status(400).json({ error: "Password must be 8+ chars with uppercase, lowercase, number and special character" }); if (await User.findOne({ email })) return res.status(409).json({ error: "Email already registered" });
+    const user = await User.create({ name, email, password, profession: profession || "", incomeRange: incomeRange || "" });
     const token = jwt.sign({ id: user._id, email: user.email, name: user.name }, process.env.JWT_SECRET || "traders_hut_secret", { expiresIn: "7d" });
     res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, watchlist: user.watchlist } });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
 
 app.post("/api/auth/login", async (req, res) => {
   try {
@@ -341,6 +345,73 @@ app.get("/api/movers", async (req, res) => {
 });
 
 app.get("/api/health", (req, res) => res.json({ status: "ok", timestamp: new Date() }));
+
+// Admin: Get All Users
+app.get("/api/admin/users", async (req, res) => {
+  const adminKey = req.headers["x-admin-key"];
+  if (adminKey !== "admin@tradershut123")
+    return res.status(401).json({ error: "Unauthorized" });
+  try {
+    const users = await User.find({}, "-password").sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) { res.status(500).json({ error: "Failed to fetch users" }); }
+});
+
+// AI Stock Prediction
+app.post("/api/predict", async (req, res) => {
+  const { symbol } = req.body;
+  if (!symbol) return res.status(400).json({ error: "Symbol required" });
+  try {
+    const q = await getQuote(symbol);
+    if (!q || !q.price) return res.status(404).json({ error: "Stock not found. Try adding .NS e.g. RELIANCE.NS" });
+
+    const stockData = {
+      symbol,
+      name: q.name || symbol,
+      price: q.price?.toFixed(2),
+      change: `${q.change >= 0 ? "+" : ""}₹${Math.abs(q.change || 0).toFixed(2)}`,
+      changePercent: `${q.changePercent >= 0 ? "+" : ""}${(q.changePercent || 0).toFixed(2)}%`,
+      up: (q.changePercent || 0) >= 0,
+      dayHigh: q.high?.toFixed(2),
+      dayLow: q.low?.toFixed(2),
+      week52High: q.fiftyTwoWeekHigh?.toFixed(2),
+      week52Low: q.fiftyTwoWeekLow?.toFixed(2),
+      pe: q.pe?.toFixed(2),
+    };
+
+    const prompt = `You are an expert Indian stock market analyst. Analyze this stock and give a prediction.
+
+Stock: ${stockData.name} (${stockData.symbol})
+Current Price: ₹${stockData.price}
+Day Change: ${stockData.change} (${stockData.changePercent})
+Day High: ₹${stockData.dayHigh} | Day Low: ₹${stockData.dayLow}
+52W High: ₹${stockData.week52High} | 52W Low: ₹${stockData.week52Low}
+P/E Ratio: ${stockData.pe || "N/A"}
+
+Respond ONLY in this exact JSON format, no extra text, no markdown:
+{
+  "verdict": "BUY or HOLD or SELL",
+  "confidence": "High or Medium or Low",
+  "analysis": "2-3 sentences explaining why based on the data",
+  "keyPoints": ["point 1", "point 2", "point 3"]
+}`;
+
+    const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+    const geminiData = await geminiRes.json();
+    const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+    const prediction = JSON.parse(text.replace(/```json|```/g, "").trim());
+    res.json({ ...prediction, symbol, stockData });
+  } catch (err) {
+    console.error("Prediction error:", err.message);
+    res.status(500).json({ error: "Prediction failed: " + err.message });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Traders Hut backend running on port ${PORT}`));

@@ -9,6 +9,8 @@ import MarketsPage from "./pages/MarketsPage";
 import NewsPage from "./pages/NewsPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import NotFound from "./pages/NotFound";
+import PredictionPage from "./pages/PredictionPage";
+import AdminPage from "./pages/AdminPage";
 import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/markets" element={<MarketsPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
+            <Route path="/prediction" element={<PredictionPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
