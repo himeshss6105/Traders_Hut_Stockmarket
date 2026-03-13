@@ -8,7 +8,7 @@ import SiteHeader from "@/components/SiteHeader";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL + "/api";
 const PERIODS = ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y"];
 
 export default function ChartPage() {
@@ -81,7 +81,7 @@ export default function ChartPage() {
       const res = await fetch(`${API}/quote/${sym}`);
       const data = await res.json();
       if (!data.error) setQuote(data);
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function ChartPage() {
         const res = await fetch(`${API}/search?q=${encodeURIComponent(searchQuery)}`);
         const data = await res.json();
         setSearchResults(data.results || []);
-      } catch {}
+      } catch { }
       setSearching(false);
     }, 300);
     return () => clearTimeout(timeout);
@@ -182,9 +182,8 @@ export default function ChartPage() {
                 <button
                   key={p}
                   onClick={() => setPeriod(p)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-                    period === p ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  }`}
+                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${period === p ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    }`}
                 >
                   {p.toUpperCase()}
                 </button>
@@ -285,9 +284,8 @@ export default function ChartPage() {
                 <div
                   key={sym}
                   onClick={() => selectSymbol(sym)}
-                  className={`flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-secondary/50 border-b border-border/50 group transition-colors ${
-                    isActive ? "bg-primary/10 border-l-2 border-l-primary" : ""
-                  }`}
+                  className={`flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-secondary/50 border-b border-border/50 group transition-colors ${isActive ? "bg-primary/10 border-l-2 border-l-primary" : ""
+                    }`}
                 >
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-medium ${isActive ? "text-primary" : "text-foreground"}`}>

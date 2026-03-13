@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ExternalLink, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL + "/api";
 
 // Curated Indian financial news sources via RSS proxy
 const NEWS_FEEDS = [
@@ -45,7 +45,7 @@ export default function NewsPage() {
     fetch(`${API}/indices`)
       .then((r) => r.json())
       .then((d) => setIndices(d.indices || []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const handleRefresh = () => {
@@ -103,11 +103,10 @@ export default function NewsPage() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                selectedCategory === cat
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${selectedCategory === cat
                   ? "bg-primary text-primary-foreground border-primary"
                   : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/40"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -125,11 +124,10 @@ export default function NewsPage() {
               className="group rounded-xl border border-border bg-card p-4 hover:border-primary/50 hover:bg-card/80 transition-all cursor-pointer"
             >
               <div className="flex items-start justify-between gap-2 mb-3">
-                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                  news.sentiment === "positive" ? "bg-green-500/10 text-green-500" :
-                  news.sentiment === "negative" ? "bg-red-500/10 text-red-500" :
-                  "bg-secondary text-muted-foreground"
-                }`}>
+                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${news.sentiment === "positive" ? "bg-green-500/10 text-green-500" :
+                    news.sentiment === "negative" ? "bg-red-500/10 text-red-500" :
+                      "bg-secondary text-muted-foreground"
+                  }`}>
                   {news.category}
                 </span>
                 <ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />

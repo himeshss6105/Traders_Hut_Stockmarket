@@ -3,17 +3,17 @@ import { Activity, BarChart3, Globe, Zap } from "lucide-react";
 import { io } from "socket.io-client";
 
 const DEFAULT_STATS = [
-  { icon: Activity, label: "NIFTY 50",    value: "24,500.00", changePercent: "+0.45%", up: true },
-  { icon: BarChart3, label: "SENSEX",     value: "80,200.00", changePercent: "+0.38%", up: true },
-  { icon: Globe,     label: "NIFTY BANK", value: "51,200.00", changePercent: "-0.12%", up: false },
-  { icon: Zap,       label: "NIFTY IT",   value: "40,100.00", changePercent: "+0.56%", up: true },
+  { icon: Activity, label: "NIFTY 50", value: "24,500.00", changePercent: "+0.45%", up: true },
+  { icon: BarChart3, label: "SENSEX", value: "80,200.00", changePercent: "+0.38%", up: true },
+  { icon: Globe, label: "NIFTY BANK", value: "51,200.00", changePercent: "-0.12%", up: false },
+  { icon: Zap, label: "NIFTY IT", value: "40,100.00", changePercent: "+0.56%", up: true },
 ];
 
 const MarketStats = () => {
   const [stats, setStats] = useState(DEFAULT_STATS);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_API_URL);
     socket.on("market-update", (data: any[]) => {
       if (!data?.length) return;
       const indices = data.filter(q => q.rawSymbol?.startsWith("^")).slice(0, 2);
@@ -23,10 +23,10 @@ const MarketStats = () => {
           if (!q) return s;
           return {
             ...s,
-            label:         q.symbol,
-            value:         parseFloat(q.price).toLocaleString("en-IN", { minimumFractionDigits: 2 }),
+            label: q.symbol,
+            value: parseFloat(q.price).toLocaleString("en-IN", { minimumFractionDigits: 2 }),
             changePercent: q.changePercent,
-            up:            q.up
+            up: q.up
           };
         }));
       }

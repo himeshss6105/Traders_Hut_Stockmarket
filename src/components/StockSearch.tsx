@@ -27,7 +27,7 @@ interface StockQuote {
   week52Low: string;
 }
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL + "/api";
 
 const StockSearch = () => {
   const [query, setQuery] = useState("");
@@ -77,7 +77,7 @@ const StockSearch = () => {
       const res = await fetch(`${API}/quote/${encodeURIComponent(result.symbol)}`);
       const data = await res.json();
       if (!data.error) setSelectedStock(data);
-    } catch {}
+    } catch { }
     finally { setLoadingQuote(false); }
   };
 
@@ -112,7 +112,7 @@ const StockSearch = () => {
                     className="w-full flex items-center justify-between px-4 py-3 hover:bg-secondary transition-colors text-left border-b border-border/50 last:border-0">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-xs font-bold text-primary shrink-0">
-                        {r.display.slice(0,2)}
+                        {r.display.slice(0, 2)}
                       </div>
                       <div>
                         <p className="font-display font-bold text-foreground text-sm">{r.display}</p>
@@ -145,20 +145,19 @@ const StockSearch = () => {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-display text-3xl font-extrabold text-foreground">
-                    {selectedStock.symbol.replace(".NS","").replace(".BO","")}
+                    {selectedStock.symbol.replace(".NS", "").replace(".BO", "")}
                   </h3>
                   <p className="text-muted-foreground">{selectedStock.name}</p>
                 </div>
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold ${
-                  selectedStock.up ? "bg-gain/10 text-gain" : "bg-loss/10 text-loss"}`}>
-                  {selectedStock.up ? <TrendingUp className="h-4 w-4"/> : <TrendingDown className="h-4 w-4"/>}
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold ${selectedStock.up ? "bg-gain/10 text-gain" : "bg-loss/10 text-loss"}`}>
+                  {selectedStock.up ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                   {selectedStock.changePercent}
                 </div>
               </div>
 
               <div className="mb-6">
                 <span className="font-display text-5xl font-extrabold text-foreground">
-                  ₹{parseFloat(selectedStock.price).toLocaleString("en-IN", {minimumFractionDigits:2})}
+                  ₹{parseFloat(selectedStock.price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </span>
                 <span className={`ml-3 text-lg font-medium ${selectedStock.up ? "text-gain" : "text-loss"}`}>
                   {selectedStock.change}
@@ -167,14 +166,14 @@ const StockSearch = () => {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  ["Open",       `₹${selectedStock.open}`],
+                  ["Open", `₹${selectedStock.open}`],
                   ["Prev Close", `₹${selectedStock.prevClose}`],
-                  ["Day High",   `₹${selectedStock.dayHigh}`],
-                  ["Day Low",    `₹${selectedStock.dayLow}`],
-                  ["Volume",     selectedStock.volume],
+                  ["Day High", `₹${selectedStock.dayHigh}`],
+                  ["Day Low", `₹${selectedStock.dayLow}`],
+                  ["Volume", selectedStock.volume],
                   ["Market Cap", selectedStock.marketCap],
-                  ["P/E Ratio",  selectedStock.pe || "N/A"],
-                  ["52W High",   `₹${selectedStock.week52High}`],
+                  ["P/E Ratio", selectedStock.pe || "N/A"],
+                  ["52W High", `₹${selectedStock.week52High}`],
                 ].map(([label, value]) => (
                   <div key={label} className="bg-secondary rounded-lg p-3">
                     <p className="text-xs text-muted-foreground">{label}</p>

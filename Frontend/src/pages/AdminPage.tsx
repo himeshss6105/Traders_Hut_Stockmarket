@@ -23,7 +23,7 @@ const AdminPage = () => {
     useEffect(() => {
         if (!authenticated) return;
         setLoading(true);
-        fetch("http://localhost:5000/api/admin/users", {
+        fetch("${import.meta.env.VITE_API_URL}/api/admin/users", {
             headers: { "x-admin-key": ADMIN_PASSWORD }
         })
             .then(r => r.json())

@@ -3,7 +3,7 @@ import { TrendingUp, X, Eye, EyeOff, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL + "/api";
 
 interface AuthUser {
   id: string;
@@ -147,14 +147,14 @@ const SiteHeader = ({ user, setUser, onSearch }: SiteHeaderProps) => {
               {modal === "signup" && (
                 <div>
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Full Name</label>
-                  <Input value={form.name} onChange={e => setForm(f => ({...f,name:e.target.value}))}
+                  <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     placeholder="Himesh Kumar" required
                     className="mt-1 bg-secondary border-border text-foreground placeholder:text-muted-foreground" />
                 </div>
               )}
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Email</label>
-                <Input type="email" value={form.email} onChange={e => setForm(f => ({...f,email:e.target.value}))}
+                <Input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                   placeholder="himesh@example.com" required
                   className="mt-1 bg-secondary border-border text-foreground placeholder:text-muted-foreground" />
               </div>
@@ -162,13 +162,13 @@ const SiteHeader = ({ user, setUser, onSearch }: SiteHeaderProps) => {
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Password</label>
                 <div className="relative mt-1">
                   <Input type={showPassword ? "text" : "password"} value={form.password}
-                    onChange={e => setForm(f => ({...f,password:e.target.value}))}
+                    onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
                     placeholder={modal === "signup" ? "Min. 6 characters" : "Your password"}
                     required minLength={6}
                     className="bg-secondary border-border text-foreground placeholder:text-muted-foreground pr-10" />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                    {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>

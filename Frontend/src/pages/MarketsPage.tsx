@@ -4,7 +4,7 @@ import { TrendingUp, TrendingDown, Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import SiteHeader from "@/components/SiteHeader";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL + "/api";
 
 interface Stock {
   symbol: string;
@@ -51,7 +51,7 @@ export default function MarketsPage() {
           );
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const sectorFiltered = selectedSector === "All" ? stocks : stocks.filter((s) => s.sector === selectedSector);
@@ -66,8 +66,8 @@ export default function MarketsPage() {
     tab === "gainers"
       ? [...textFiltered].filter((s) => (s.changePercent || 0) > 0).sort((a, b) => (b.changePercent || 0) - (a.changePercent || 0))
       : tab === "losers"
-      ? [...textFiltered].filter((s) => (s.changePercent || 0) < 0).sort((a, b) => (a.changePercent || 0) - (b.changePercent || 0))
-      : textFiltered;
+        ? [...textFiltered].filter((s) => (s.changePercent || 0) < 0).sort((a, b) => (a.changePercent || 0) - (b.changePercent || 0))
+        : textFiltered;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -94,9 +94,8 @@ export default function MarketsPage() {
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize ${
-                  tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize ${tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {t}
               </button>
@@ -111,11 +110,10 @@ export default function MarketsPage() {
             <button
               key={s}
               onClick={() => setSelectedSector(s)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                selectedSector === s
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${selectedSector === s
                   ? "bg-primary text-primary-foreground border-primary"
                   : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/40"
-              }`}
+                }`}
             >
               {s}
             </button>

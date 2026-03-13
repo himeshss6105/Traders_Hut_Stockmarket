@@ -6,7 +6,7 @@ import SiteHeader from "@/components/SiteHeader";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL + "/api";
 
 export default function WatchlistPage() {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ export default function WatchlistPage() {
         const res = await fetch(`${API}/search?q=${encodeURIComponent(searchQuery)}`);
         const data = await res.json();
         setSearchResults(data.results || []);
-      } catch {}
+      } catch { }
       setSearching(false);
     }, 300);
     return () => clearTimeout(timeout);

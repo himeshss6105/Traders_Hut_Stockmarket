@@ -349,7 +349,7 @@ app.get("/api/health", (req, res) => res.json({ status: "ok", timestamp: new Dat
 // Admin: Get All Users
 app.get("/api/admin/users", async (req, res) => {
   const adminKey = req.headers["x-admin-key"];
-  if (adminKey !== "admin@tradershut123")
+  if (adminKey !== "Himeshss@060105")
     return res.status(401).json({ error: "Unauthorized" });
   try {
     const users = await User.find({}, "-password").sort({ createdAt: -1 });

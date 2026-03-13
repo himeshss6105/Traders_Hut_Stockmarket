@@ -11,17 +11,17 @@ interface TickerStock {
 const MarketTicker = () => {
   const [stocks, setStocks] = useState<TickerStock[]>([
     { symbol: "NIFTY 50", price: "24,500.00", changePercent: "+0.45%", up: true },
-    { symbol: "SENSEX",   price: "80,200.00", changePercent: "+0.38%", up: true },
-    { symbol: "RELIANCE", price: "2,945.00",  changePercent: "+1.12%", up: true },
-    { symbol: "TCS",      price: "4,120.00",  changePercent: "-0.34%", up: false },
-    { symbol: "INFY",     price: "1,890.00",  changePercent: "+0.78%", up: true },
-    { symbol: "HDFCBANK", price: "1,720.00",  changePercent: "+0.56%", up: true },
-    { symbol: "WIPRO",    price: "570.00",    changePercent: "-0.22%", up: false },
-    { symbol: "ONGC",     price: "298.00",    changePercent: "+1.45%", up: true },
+    { symbol: "SENSEX", price: "80,200.00", changePercent: "+0.38%", up: true },
+    { symbol: "RELIANCE", price: "2,945.00", changePercent: "+1.12%", up: true },
+    { symbol: "TCS", price: "4,120.00", changePercent: "-0.34%", up: false },
+    { symbol: "INFY", price: "1,890.00", changePercent: "+0.78%", up: true },
+    { symbol: "HDFCBANK", price: "1,720.00", changePercent: "+0.56%", up: true },
+    { symbol: "WIPRO", price: "570.00", changePercent: "-0.22%", up: false },
+    { symbol: "ONGC", price: "298.00", changePercent: "+1.45%", up: true },
   ]);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_API_URL);
     socket.on("market-update", (data: any[]) => {
       if (data && data.length > 0) setStocks(data);
     });
