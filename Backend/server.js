@@ -405,7 +405,8 @@ Respond ONLY in this exact JSON format, no extra text, no markdown:
     });
     const geminiData = await geminiRes.json();
     const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-    const prediction = JSON.parse(text.replace(/```json|```/g, "").trim());
+    const cleanText = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    const prediction = JSON.parse(cleanText);
     res.json({ ...prediction, symbol, stockData });
   } catch (err) {
     console.error("Prediction error:", err.message);
